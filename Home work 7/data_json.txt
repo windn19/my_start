@@ -1,0 +1,1 @@
+[{"brand": "Huynday", "model": "Accent", "fuel_consumption": 8, "cost": 5000}, {"brand": "Renault", "model": "Logan", "fuel_consumption": 10, "cost": 3500}, {"brand": "Toyota", "model": "Camry", "fuel_consumption": 12, "cost": 10000}, {"brand": "Mercedes-Benz", "model": "Gelandewagen", "fuel_consumption": 20, "cost": 8000}]
