@@ -1,11 +1,16 @@
-import request
-print('my programm')
-print("I don't no what to write")
 
+# Декоратор - функция не будет выполнена при статусе игры - финишь
+def skip(func):
+    def wrapper(*args, **kwargs):
+        global status
+        if status != 'finish':
+            func(*args, **kwargs)
+    return wrapper
 
-def time_task(*time, k):
-  k = k + 1
-  print(k, 'упражнений выполнено за', sum(*time) // 60, 'ч.', sum(*time) % 60, 'мин.')
+status = 'finish'
 
-time_list = [17, 15, 45, 38, 23, 21, 23, 10, 18]
-time_task(time_list, 7)
+@skip
+def ttr(text):
+    print(text)
+
+ttr('привет')
