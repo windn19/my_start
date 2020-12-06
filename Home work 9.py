@@ -12,7 +12,7 @@ from copy import copy
 ###############################      Техаский покер против "Компьютера"      ###############################
 ####################################                                    ####################################
 
-
+# Создадим карту
 class Card():
 
     # Перечислим возможные масти и значения карт
@@ -72,7 +72,7 @@ class Card():
         self.suit = suit
 
 
-
+# Создадим колоду
 class Deck:
 
     # Создадим саму колоду
@@ -91,7 +91,7 @@ class Deck:
         return Deck.deck.pop()
 
 
-
+# Создадим игрока
 class Player:
 
     # Зададим атрибуты игрока
@@ -117,6 +117,7 @@ class Player:
         self.points += points
 
 
+# Создадим противника  - The set of simple algorithms (набор нехитрых алгоритмов)
 class SetSimpleAlgorithms:
 
     name = 'SSA'
@@ -138,6 +139,8 @@ class SetSimpleAlgorithms:
     def add_card(self, card):
         self.hand.append(card)
 
+
+# Создадим саму игру
 class TexasHoldEm:
     # Генератор очередности хода
     def genrator_turn(self):
@@ -492,7 +495,7 @@ class TexasHoldEm:
 
 # Создаем экземпляр игры
 geme = TexasHoldEm()
-# Просим пользователя ввести его имф
+# Просим пользователя ввести его имя
 geme.player.rename(input('Введите свое имя: '))
 # Инициализируем начала игры
 geme.start()
