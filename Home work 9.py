@@ -108,11 +108,11 @@ class Player:
     def rename(self, name):
         self.name = name
 
-    # Добить карту в руку
+    # Добавить карту в руку
     def add_card(self, card):
         self.hand.append(card)
 
-    # Добавим поинты
+    # Добавить поинты
     def add_point(self, points):
         self.points += points
 
@@ -135,7 +135,7 @@ class SetSimpleAlgorithms:
     def add_point(self, points):
         self.points += points
 
-    # Добить карту в руку
+    # Добавить карту в руку
     def add_card(self, card):
         self.hand.append(card)
 
@@ -157,9 +157,9 @@ class TexasHoldEm:
         self.player = Player()                             # Добавим игрока
         self.SSA = SetSimpleAlgorithms()                   # Добавим SSA
         self.table = []                                    # Создадим список карт на столе
-        self.bank = 0                                      # Создадим переменнуд для банка
+        self.bank = 0                                      # Создадим переменную для банка
         # Раздадим поинты
-        self.player.add_point(points)                      # Начилим поинты игроку
+        self.player.add_point(points)                      # Начислим поинты игроку
         self.SSA.add_point(points)                         # Начислим поинты SSA
         self.status = 'ready'                              # Статус игры
         self.gen_turn = TexasHoldEm.genrator_turn(self)    # Герератор очереди хода играков
@@ -200,7 +200,7 @@ class TexasHoldEm:
         for i in range(ch):
             self.command_SSA.append('check')
 
-    # Декоратор - функция не будет выполнена при статусе игры - финишь
+    # Декоратор - функция не будет выполнена при статусе игры - финиш
     def skip(func):
         def wrapper(self):
             if self.status != 'fast_finish':
@@ -252,11 +252,11 @@ class TexasHoldEm:
     @skip
     def action_SSA(self):
         # Выберем ход SSA рандомно
-        command = random.choice(geme.command_SSA)
+        command = random.choice(self.command_SSA)
         # Если ставка SSA меньше чем игрока, не позволим ему сделать чек
         if self.bet_SSA < self.bet_player:
             while command == 'check':
-                command = random.choice(geme.command_SSA)
+                command = random.choice(self.command_SSA)
         # Напечатаем итоговую команду
         print('SSA:', command)
         # Игрок сдается
@@ -293,10 +293,10 @@ class TexasHoldEm:
     # Завершение тогов
     def bet_end(self):
         # Добавляем ставки в банк
-        geme.bank += geme.bet_SSA + geme.bet_player
+        self.bank += self.bet_SSA + self.bet_player
         # Обнуляем значения ставок играков
-        geme.bet_SSA = 0
-        geme.bet_player = 0
+        self.bet_SSA = 0
+        self.bet_player = 0
 
     # Проверим наличие комбинаций у игрока или SSA и вернем эквивалент комбинации в цифрах
     def chek_set(self, name):
@@ -466,27 +466,27 @@ class TexasHoldEm:
 
     @skip
     def finish(self):
-        geme.status = 'finish'
+        self.status = 'finish'
         # Вскрываем карты
-        geme.display()
+        self.display()
 
         # Считаем результаты
-        result_player = geme.chek_set(geme.player.name)
-        result_SSA = geme.chek_set(geme.SSA.name)
+        result_player = self.chek_set(self.player.name)
+        result_SSA = self.chek_set(self.SSA.name)
         # Определяем победителя
         if result_SSA > result_player:
             print('Побеждает SSA')
-            geme.SSA.add_point(geme.bank)
+            self.SSA.add_point(self.bank)
         elif result_SSA == result_player:
             print('Ничья')
-            geme.SSA.add_point(geme.bank / 2)
-            geme.player.add_point(geme.bank / 2)
+            self.SSA.add_point(self.bank / 2)
+            self.player.add_point(self.bank / 2)
         else:
-            print('Побеждает', geme.player.name)
-            geme.player.add_point(geme.bank)
+            print('Побеждает', self.player.name)
+            self.player.add_point(self.bank)
 
         # Обнуляем банк
-        geme.bank = 0
+        self.bank = 0
 
 
 
@@ -494,99 +494,99 @@ class TexasHoldEm:
 
 
 # Создаем экземпляр игры
-geme = TexasHoldEm()
+game = TexasHoldEm()
 # Просим пользователя ввести его имя
-geme.player.rename(input('Введите свое имя: '))
+game.player.rename(input('Введите свое имя: '))
 # Инициализируем начала игры
-geme.start()
+game.start()
 # Задаем пропорции для команд SSA
-geme.add_com_SSA(2, 35, 35, 28)
+game.add_com_SSA(2, 35, 35, 28)
 
 # Играем пока не загоним оппонента в минус
-while geme.player.points > 0 and geme.SSA.points > 0:
+while game.player.points > 0 and game.SSA.points > 0:
 
     # Инициализируем начало игры
-    geme.start()
+    game.start()
 
     # Определяем чей ход
-    turn = next(geme.gen_turn)
+    turn = next(game.gen_turn)
     print('ход игрока:', turn)
 
-    # Проедум все раунды цыклом
+    # Пройдум все раунды циклом
     for round_game in ['flop', 'turn', 'river']:
-        # Определяем текущий стату
-        geme.status = round_game
-        print('status:', geme.status)
+        # Определяем текущий статус
+        game.status = round_game
+        print('status:', game.status)
 
-        # Добавим карту в втором и третьем кругу
-        if geme.status == 'turn' or geme.status == 'river':
-            geme.table.append(geme.deck.pick())
+        # Добавим карту во втором и третьем кругах
+        if game.status == 'turn' or game.status == 'river':
+            game.table.append(game.deck.pick())
 
         # Выведем текущее состояния игры на экран
-        geme.display()
+        game.display()
 
         # Если первым ходит SSA
         if turn == 'SSA':
             # Если это первый круг, начинаем с обязательных ставок
-            if geme.status == 'flop':
+            if game.status == 'flop':
                 # Начальная ставка
-                geme.player.add_point(-2)
-                geme.bet_player = 2
-                geme.display()
+                game.player.add_point(-2)
+                game.bet_player = 2
+                game.display()
             # Во всех остальных случаях ходим по очереди
             else:
                 # Ход SSA
-                geme.action_SSA()
-                geme.display()
+                game.action_SSA()
+                game.display()
                 # Просим игрока сделать свой ход
-                geme.action()
-                geme.display()
-            # Если ставки не равны, торгуемя пока не уровняем их
-            while geme.bet_SSA != geme.bet_player:
+                game.action()
+                game.display()
+            # Если ставки не равны, торгуемся пока не уровняем их
+            while game.bet_SSA != game.bet_player:
                 # Ход SSA
-                geme.action_SSA()
-                geme.display()
+                game.action_SSA()
+                game.display()
                 # Просим игрока сделать свой ход
-                geme.action()
-                geme.display()
+                game.action()
+                game.display()
                 # Разрываем цикл если статус финиш
-                if geme.status == 'fast_finish': break
+                if game.status == 'fast_finish': break
         # Если первым ходит игрок
         else:
             # Если это первый круг, начинаем с обязательных ставок
-            if geme.status == 'flop':
+            if game.status == 'flop':
                 # Начальная ставка
-                geme.SSA.add_point(-2)
-                geme.bet_SSA = 2
-                geme.display()
+                game.SSA.add_point(-2)
+                game.bet_SSA = 2
+                game.display()
             # Во всех остальных случаях ходим по очереди
             else:
                 # Просим игрока сделать свой ход
-                geme.action()
-                geme.display()
+                game.action()
+                game.display()
                 # Ход SSA
-                geme.action_SSA()
-                geme.display()
-            # Если ставки не равны, торгуемя пока не уровняем их
-            while geme.bet_SSA != geme.bet_player:
+                game.action_SSA()
+                game.display()
+            # Если ставки не равны, торгуемся пока не уровняем их
+            while game.bet_SSA != game.bet_player:
                 # Просим игрока сделать свой ход
-                geme.action()
-                geme.display()
+                game.action()
+                game.display()
                 # Ход SSA
-                geme.action_SSA()
-                geme.display()
+                game.action_SSA()
+                game.display()
                 # Разрываем цикл если статус финиш
-                if geme.status == 'fast_finish': break
+                if game.status == 'fast_finish': break
         # Конец торгов
-        geme.bet_end()
+        game.bet_end()
         # Разрываем цикл если статус финиш
-        if geme.status == 'fast_finish': break
+        if game.status == 'fast_finish': break
 
     # Завершаем партию
-    geme.finish()
+    game.finish()
 
-    # Выведем текущее состояния игры на экран
-    geme.display()
+    # Выведем текущее состояние игры на экран
+    game.display()
 
 '''
 Доработать:
